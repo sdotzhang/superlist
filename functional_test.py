@@ -1,38 +1,51 @@
 # -*- coding: utf-8 -*-
 # @Author: szhang
 # @Date:   2017-08-09 00:31:30
-# @Last Modified by:   szhang
-# @Last Modified time: 2017-08-10 09:08:02
+# @Last Modified by:   Shaonan Zhang
+# @Last Modified time: 2017-08-10 09:28:52
 # tdd w/ python book first file
 
-import logging
 from selenium import webdriver
+import unittest
 
-browser = webdriver.Firefox()
 
-# Edith has heard about a cool new online to-do app, she goes to check out its homepage.
-browser.get('http://localhost:8000')
+class NewVisitorTestCase(unittest.TestCase):
 
-# She notices the page title mentions 'To-Do'
-expected_title_keyword = 'To-Do'
-assert expected_title_keyword in browser.title, "Error asserting {} in title".format(expected_title_keyword)
+    def setUp(self):
+        self.browser = webdriver.Firefox()
+        self.browser.implicitly_wait(3)
 
-# She was invited to create a to-do right away
+    def tearDown(self):
+        self.browser.quit()
 
-# She types 'Buy peacock feathers' into text input box
+    def test_can_start_a_list_and_retrieve_it_later(self):
+        # Edith has heard about a cool new online to-do app, she goes to check out its homepage.
+        self.browser.get('http://localhost:8000')
 
-# When she hits enter, the page updates, and now the page lists
-# "1: Buy peacock feathers" as an item in a to-do list
+        # She notices the page title mentions 'To-Do'
+        expected_title_keyword = 'To-Do'
+        self.assertIn(expected_title_keyword, self.browser.title)
+        self.fail("Finish the test!")
 
-# There is still a text box inviting her to add another item.
-# She enters "Use peacock feathers to make a fly"
+        # She was invited to create a to-do right away
 
-# The page updates again, and now shows both items on her list
+        # She types 'Buy peacock feathers' into text input box
 
-# Edith wonder whether the sites will remember her lists.
-# Then she see that the website has generated a unique url for her
+        # When she hits enter, the page updates, and now the page lists
+        # "1: Buy peacock feathers" as an item in a to-do list
 
-# She visits that URL, her to-do list is still there
+        # There is still a text box inviting her to add another item.
+        # She enters "Use peacock feathers to make a fly"
 
-# Edith closes the browser
-browser.close()
+        # The page updates again, and now shows both items on her list
+
+        # Edith wonder whether the sites will remember her lists.
+        # Then she see that the website has generated a unique url for her
+
+        # She visits that URL, her to-do list is still there
+
+        # Edith closes the browser
+
+
+if __name__ == '__main__':
+    unittest.main()
