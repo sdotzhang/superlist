@@ -2,7 +2,7 @@
 # @Author: szhang
 # @Date:   2017-08-09 00:31:30
 # @Last Modified by:   Shaonan Zhang
-# @Last Modified time: 2017-08-13 22:16:01
+# @Last Modified time: 2017-08-13 22:43:29
 # tdd w/ python book first file
 
 from selenium import webdriver
@@ -26,7 +26,7 @@ class NewVisitorTestCase(unittest.TestCase):
         # She notices the page title mentions 'To-Do'
         expected_title_keyword = 'To-Do'
         self.assertIn(expected_title_keyword, self.browser.title)
-        header_text = self.browser.fing_element_by_tag_name('h1').text
+        header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn(expected_title_keyword, header_text)
 
         # She was invited to create a to-do right away
@@ -41,7 +41,7 @@ class NewVisitorTestCase(unittest.TestCase):
         inputbox.send_keys(Keys.ENTER)
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(any(row.text == '1: Buy peacock feathers' for row in rows))
+        self.assertTrue(any(row.text == '1: Buy peacock feathers' for row in rows), "New to-do item did not appear in table")
 
         # There is still a text box inviting her to add another item.
         # She enters "Use peacock feathers to make a fly"
