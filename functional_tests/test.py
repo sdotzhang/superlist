@@ -2,9 +2,9 @@
 # @Author: szhang
 # @Date:   2017-08-09 00:31:30
 # @Last Modified by:   Shaonan Zhang
-# @Last Modified time: 2017-08-17 09:26:41
+# @Last Modified time: 2017-08-18 08:52:42
 # tdd w/ python book first file
-
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
@@ -13,7 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import staleness_of
 
 
-class NewVisitorTestCase(unittest.TestCase):
+class NewVisitorTestCase(LiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -37,7 +37,7 @@ class NewVisitorTestCase(unittest.TestCase):
 
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Edith has heard about a cool new online to-do app, she goes to check out its homepage.
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # She notices the page title mentions 'To-Do'
         expected_title_keyword = 'To-Do'
