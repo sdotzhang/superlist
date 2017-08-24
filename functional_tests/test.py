@@ -2,7 +2,7 @@
 # @Author: szhang
 # @Date:   2017-08-09 00:31:30
 # @Last Modified by:   Shaonan Zhang
-# @Last Modified time: 2017-08-21 08:46:28
+# @Last Modified time: 2017-08-24 08:35:00
 # tdd w/ python book first file
 from django.test import LiveServerTestCase
 from selenium import webdriver
@@ -59,7 +59,7 @@ class NewVisitorTestCase(LiveServerTestCase):
         # "1: Buy peacock feathers" as an item in a to-do list
         with self.wait_for_page_load(timeout=10):
             edith_list_url = self.browser.current_url
-            self.assertRegex(edith_list_url, r'/lists/.+')
+            self.assertRegex(edith_list_url, r'/lists/\d+')
             self._check_for_row_in_list_table('1: Buy peacock feathers')
 
         # There is still a text box inviting her to add another item.
@@ -87,15 +87,16 @@ class NewVisitorTestCase(LiveServerTestCase):
         # Francis starts a new list by entering a new item
         self._create_new_item('Buy milk')
 
-        # Francis gets his own URL
-        francis_list_url = self.browser.current_url
-        self.assertRegex(francis_list_url, r'/lists/.+')
-        self.assertNotEqual(francis_list_url, edith_list_url)
+        with self.wait_for_page_load(timeout=10):
+            # Francis gets his own URL
+            francis_list_url = self.browser.current_url
+            self.assertRegex(francis_list_url, r'/lists/\d+')
+            self.assertNotEqual(francis_list_url, edith_list_url)
 
-        # Again, there is no trace of Edith's list
-        page_text = self.browser.find_element_by_tag_name('body').text
-        self.assertNotIn('Buy peacock feathers', page_text)
-        self._check_for_row_in_list_table('1: Buy milk')
+            # Again, there is no trace of Edith's list
+            page_text = self.browser.find_element_by_tag_name('body').text
+            self.assertNotIn('Buy peacock feathers', page_text)
+            self._check_for_row_in_list_table('1: Buy milk')
 
         # Edith wonder whether the sites will remember her lists.
         # Then she see that the website has generated a unique url for her

@@ -50,18 +50,29 @@ class ListAndItemModelTest(TestCase):
 
 class ListViewTest(TestCase):
 
-    def test_display_all_items(self):
-        todo_list = TodoList.objects.create()
-        Item.objects.create(text='itemey 1', todo_list=todo_list)
-        Item.objects.create(text='itemey 2', todo_list=todo_list)
-        response = self.client.get('/lists/uniq_url/')
+    def test_displays_only_items_for_that_list(self):
+        correct_todo_list = TodoList.objects.create()
+        Item.objects.create(text='itemey 1', todo_list=correct_todo_list)
+        Item.objects.create(text='itemey 2', todo_list=correct_todo_list)
+        response = self.client.get('/lists/{}/'.format(correct_todo_list.id))
+        other_todo_list = TodoList.objects.create()
+        Item.objects.create(text='other list item 1', todo_list=other_todo_list)
+        Item.objects.create(text='other list item 2', todo_list=other_todo_list)
         self.assertContains(response, 'itemey 1')
         self.assertContains(response, 'itemey 2')
+        self.assertNotContains(response, 'other list item 1')
+        self.assertNotContains(response, 'other list item 2')
 
     def test_uses_list_templates(self):
-        response = self.client.get('/lists/uniq_url/')
+        temp_todo_list = TodoList.objects.create()
+        response = self.client.get('/lists/{}/'.format(temp_todo_list.id))
         self.assertTemplateUsed(response, 'list.html')
 
+    def test_passes_correct_list_template(self):
+        correct_todo_list = TodoList.objects.create()
+        TodoList.objects.create()
+        response = self.client.get('/lists/{}/'.format(correct_todo_list.id))
+        self.assertEqual(response.context['todo_list'], correct_todo_list)
 
 class NewListTest(TestCase):
 
@@ -70,8 +81,23 @@ class NewListTest(TestCase):
         self.client.post('/lists/new', data={'item_text': new_item_text})
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
+        new_todolist = TodoList.objects.first()
         self.assertEqual(new_item.text, new_item_text)
+        self.assertEqual(new_item.todo_list.id, new_todolist.id)
+
+    def test_save_a_POST_request_to_an_existing_list(self):
+        correct_todo_list = TodoList.objects.create()
+        TodoList.objects.create()
+        self.assertEqual(TodoList.objects.count(), 2)
+        new_item_text = 'A new list item'
+        self.client.post('/lists/{}/add_item'.format(correct_todo_list.id), data={'item_text': new_item_text})
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, new_item_text)
+        self.assertEqual(new_item.todo_list, correct_todo_list)
 
     def test_redirects_after_POST(self):
-        response = self.client.post('/lists/new', data={'item_text': 'A new list item'})
-        self.assertRedirects(response, '/lists/uniq_url/')
+        correct_todo_list = TodoList.objects.create()
+        TodoList.objects.create()
+        response = self.client.post('/lists/{}/add_item'.format(correct_todo_list.id), data={'item_text': 'A new list item'})
+        self.assertRedirects(response, '/lists/{}/'.format(correct_todo_list.id))
