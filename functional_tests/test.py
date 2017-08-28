@@ -2,7 +2,7 @@
 # @Author: szhang
 # @Date:   2017-08-09 00:31:30
 # @Last Modified by:   Shaonan Zhang
-# @Last Modified time: 2017-08-24 08:35:00
+# @Last Modified time: 2017-08-28 08:38:30
 # tdd w/ python book first file
 from django.test import LiveServerTestCase
 from selenium import webdriver
@@ -98,6 +98,20 @@ class NewVisitorTestCase(LiveServerTestCase):
             self.assertNotIn('Buy peacock feathers', page_text)
             self._check_for_row_in_list_table('1: Buy milk')
 
+    def test_layout_and_styling(self):
+        # Edith goes to home page
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # She notices the input box is nicely centered
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(inputbox.location['x'] + inputbox.size['width'] / 2, 512, delta=5)
+        # She starts a new list and sees the input is nicely
+        # centered there too
+        self._create_new_item('testing\n')
+        with self.wait_for_page_load(timeout=10):
+            inputbox = self.browser.find_element_by_id('id_new_item')
+            self.assertAlmostEqual(inputbox.location['x'] + inputbox.size['width'] / 2, 512, delta=5)
         # Edith wonder whether the sites will remember her lists.
         # Then she see that the website has generated a unique url for her
 
