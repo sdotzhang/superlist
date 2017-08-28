@@ -2,9 +2,9 @@
 # @Author: szhang
 # @Date:   2017-08-09 00:31:30
 # @Last Modified by:   Shaonan Zhang
-# @Last Modified time: 2017-08-28 08:38:30
+# @Last Modified time: 2017-08-28 09:26:27
 # tdd w/ python book first file
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
@@ -13,7 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import staleness_of
 
 
-class NewVisitorTestCase(LiveServerTestCase):
+class NewVisitorTestCase(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
