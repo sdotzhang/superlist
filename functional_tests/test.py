@@ -2,18 +2,33 @@
 # @Author: szhang
 # @Date:   2017-08-09 00:31:30
 # @Last Modified by:   Shaonan Zhang
-# @Last Modified time: 2017-08-28 09:26:27
+# @Last Modified time: 2017-08-30 21:24:56
 # tdd w/ python book first file
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
+import sys
 from contextlib import contextmanager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import staleness_of
 
 
 class NewVisitorTestCase(StaticLiveServerTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        for arg in sys.argv:
+            if 'liveserver' in arg:
+                cls.server_url = 'http://' + arg.split('=')[1]
+                return
+        super().setUpClass()
+        cls.server_url = cls.live_server_url
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.server_url == cls.live_server_url:
+            super().tearDownClass()
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -42,7 +57,7 @@ class NewVisitorTestCase(StaticLiveServerTestCase):
 
     def test_can_start_a_list_and_retrieve_it_later(self):
         # Edith has heard about a cool new online to-do app, she goes to check out its homepage.
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
 
         # She notices the page title mentions 'To-Do'
         expected_title_keyword = 'To-Do'
@@ -79,7 +94,7 @@ class NewVisitorTestCase(StaticLiveServerTestCase):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
         # Francis visits the page, found no information about Edith's list
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy peacock feathers', page_text)
         self.assertNotIn('make a fly', page_text)
@@ -100,7 +115,7 @@ class NewVisitorTestCase(StaticLiveServerTestCase):
 
     def test_layout_and_styling(self):
         # Edith goes to home page
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         self.browser.set_window_size(1024, 768)
 
         # She notices the input box is nicely centered
