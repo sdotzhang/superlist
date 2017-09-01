@@ -1,0 +1,19 @@
+[Unit]
+Description=gunicorn daemon for SITENAME
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+PIDFile=/run/gunicorn/pid
+User=USERNAME
+Group=USERNAME
+RuntimeDirectory=gunicorn
+WorkingDirectory=/home/USERNAME/sites/SITENAME/source
+ExecStart=/home/USERNAME/sites/SITENAME/virtualenv/bin/gunicorn --pid /run/gunicorn/pid   \
+          --bind unix:/run/gunicorn/socket APPNAME.wsgi
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
