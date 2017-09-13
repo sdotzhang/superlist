@@ -47,8 +47,6 @@ class ListViewTest(TestCase):
         response = self.client.get('/lists/{}/'.format(correct_todo_list.id))
         self.assertEqual(response.context['todo_list'], correct_todo_list)
 
-class NewListTest(TestCase):
-
     def test_saving_a_POST_request(self):
         response = self.client.post('/lists/new', data={'item_text': ''})
         self.assertEqual(response.status_code, 200)
@@ -68,7 +66,7 @@ class NewListTest(TestCase):
         TodoList.objects.create()
         self.assertEqual(TodoList.objects.count(), 2)
         new_item_text = 'A new list item'
-        self.client.post('/lists/{}/add_item'.format(correct_todo_list.id), data={'item_text': new_item_text})
+        self.client.post('/lists/{}/'.format(correct_todo_list.id), data={'item_text': new_item_text})
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, new_item_text)
@@ -77,5 +75,5 @@ class NewListTest(TestCase):
     def test_redirects_after_POST(self):
         correct_todo_list = TodoList.objects.create()
         TodoList.objects.create()
-        response = self.client.post('/lists/{}/add_item'.format(correct_todo_list.id), data={'item_text': 'A new list item'})
+        response = self.client.post('/lists/{}/'.format(correct_todo_list.id), data={'item_text': 'A new list item'})
         self.assertRedirects(response, '/lists/{}/'.format(correct_todo_list.id))

@@ -8,6 +8,16 @@ def home_page(request):
 
 def view_list(request, todo_list_id):
     todo_list = TodoList.objects.get(id=todo_list_id)
+    if request.method == 'POST':
+        item = Item.objects.create(text=request.POST['item_text'], todo_list=todo_list)
+        try:
+            item.full_clean()
+            item.save()
+            return redirect('/lists/{}/'.format(todo_list.id))
+        except ValidationError:
+            error = "You can't create empty list items"
+            item.delete()
+            return render(request, 'list.html', {'todo_list': todo_list, 'error': error})
     return render(request, 'list.html', {'todo_list': todo_list})
 
 def new_list(request):
@@ -18,11 +28,7 @@ def new_list(request):
         item.save()
     except ValidationError:
         todo_list.delete()
+        item.delete()
         error = "You can't create empty list items"
         return render(request, 'home.html', {'error': error})
-    return redirect('/lists/{}/'.format(todo_list.id))
-
-def add_item(request, todo_list_id):
-    todo_list = TodoList.objects.get(id=todo_list_id)
-    Item.objects.create(text=request.POST['item_text'], todo_list=todo_list)
     return redirect('/lists/{}/'.format(todo_list.id))
