@@ -36,3 +36,7 @@ class ListAndItemModelTest(TestCase):
         with self.assertRaises(ValidationError):
             item.save()
             item.full_clean()
+
+    def test_get_absolute_url(self):
+        todo_list = TodoList.objects.create()
+        self.assertEqual(todo_list.get_absolute_url(), '/lists/{}/'.format(todo_list.id))

@@ -13,7 +13,7 @@ def view_list(request, todo_list_id):
         try:
             item.full_clean()
             item.save()
-            return redirect('/lists/{}/'.format(todo_list.id))
+            return redirect(todo_list)
         except ValidationError:
             error = "You can't create empty list items"
             item.delete()
@@ -31,4 +31,4 @@ def new_list(request):
         item.delete()
         error = "You can't create empty list items"
         return render(request, 'home.html', {'error': error})
-    return redirect('/lists/{}/'.format(todo_list.id))
+    return redirect(todo_list)
